@@ -1,0 +1,41 @@
+# Version control
+npm-debug.log*
+node_modules
+.git
+.gitignore
+
+# Dependencies
+**/node_modules
+**/venv
+**/__pycache__
+**/*.pyc
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Build outputs
+**/build
+**/dist
+**/*.egg-info
+
+# Development files
+**/.vscode
+**/.idea
+**/*.log
+**/npm-debug.log*
+**/yarn-debug.log*
+**/yarn-error.log*
+
+# Test files
+**/coverage
+**/.pytest_cache
+
+# Docker files
+**/Dockerfile
+docker-compose.yml
+.dockerignore
+.env

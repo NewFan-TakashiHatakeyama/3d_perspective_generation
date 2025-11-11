@@ -1,0 +1,3 @@
+# robots.txt の仕様については https://www.robotstxt.org/robotstxt.html を参照してください
+User-agent: *
+Disallow:
