@@ -26,9 +26,24 @@ const GalleryColumn = ({
           既存レンダーセット
         </Text>
         <Select
-          size="sm"
+          size="md"
+          color="white"
+          fontWeight="medium"
           bg="gray.900"
-          borderColor="gray.700"
+          borderColor="teal.600"
+          focusBorderColor="teal.300"
+          iconColor="teal.200"
+          _hover={{ borderColor: "teal.400" }}
+          _focus={{ boxShadow: "0 0 0 1px rgba(129, 230, 217, 0.6)" }}
+          sx={{
+            option: {
+              backgroundColor: "#1a202c",
+              color: "white",
+            },
+            "option:hover, option:focus": {
+              backgroundColor: "#2d3748",
+            },
+          }}
           value={activeSetId}
           onChange={(event) => onSetChange(event.target.value)}
         >

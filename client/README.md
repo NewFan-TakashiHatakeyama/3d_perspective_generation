@@ -73,7 +73,7 @@ src/
 - `projectBrief`: ユーザーが入力する制作要件
 - `uploadedFloorPlan`: 図面画像の ObjectURL とファイル名
 - `activeSetId`, `selectedRenderId`: 表示中のレンダーセットと選択アングル
-- `toneFilters`, `materialVariants`, `lighting`: 調整パラメータの集合
+- `toneFilters`, `materialVariantsByShot`, `lighting`: 調整パラメータの集合
 - `comparisonMode`: `single / split / slider` の比較方式
 - `selectedRenderIds`: ZIP 書き出し対象のバルク選択状態
 - `getActiveShots`, `getShotWithVariants`: アセットと調整値を合成するドメイン関数

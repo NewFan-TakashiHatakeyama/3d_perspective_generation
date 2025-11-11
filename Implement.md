@@ -58,7 +58,7 @@
 
 * `useRenderingDemoStore`（Zustand）：クライアント内部状態のみ
   * `activeSetId`, `uploadedFloorPlan`, `selectedRenderIds`
-  * `currentFilters`, `activePreset`, `materialVariants`, `lighting`, `camera`
+  * `currentFilters`, `activePreset`, `materialVariantsByShot`, `lighting`, `camera`
   * `comparisonMode`（Single / Split / Slider）
 
 # 3) Next.js 構成（App Router | フロントのみ）

@@ -45,15 +45,27 @@ const cloneProjectBrief = () => ({
   delivery: { ...initialProjectBrief.delivery },
 });
 
+const initialSetId = DEFAULT_RENDER_SET_ID;
+const initialShotId = getFirstShotId(initialSetId);
+
+const buildInitialMaterialState = () => {
+  if (!initialShotId) return {};
+  return {
+    [initialSetId]: {
+      [initialShotId]: cloneMaterialVariants(),
+    },
+  };
+};
+
 const useRenderingDemoStore = create((set, get) => ({
-  activeSetId: DEFAULT_RENDER_SET_ID,
+  activeSetId: initialSetId,
   activeTag: "all",
-  selectedRenderId: getFirstShotId(DEFAULT_RENDER_SET_ID),
-  selectedRenderIds: {},
+  selectedRenderId: initialShotId,
+  selectedRenderIds: initialShotId ? { [initialShotId]: true } : {},
   altTextByShot: {},
   toneFilters: cloneToneFilters(),
   activeTonePreset: "Neutral",
-  materialVariants: cloneMaterialVariants(),
+  materialVariantsByShot: buildInitialMaterialState(),
   lighting: { ...DEFAULT_LIGHTING },
   camera: { ...DEFAULT_CAMERA },
   comparisonMode: "single",
@@ -123,10 +135,21 @@ const useRenderingDemoStore = create((set, get) => ({
       activeTonePreset: "Neutral",
     }),
 
-  setMaterialVariant: (groupId, variantId) =>
-    set((state) => ({
-      materialVariants: { ...state.materialVariants, [groupId]: variantId },
-    })),
+  setMaterialVariant: (setId, shotId, groupId, variantId) =>
+    set((state) => {
+      if (!setId || !shotId) {
+        return {};
+      }
+      const nextBySet = { ...state.materialVariantsByShot };
+      const setVariants = { ...(nextBySet[setId] ?? {}) };
+      const shotVariants = {
+        ...(setVariants[shotId] ?? cloneMaterialVariants()),
+        [groupId]: variantId,
+      };
+      setVariants[shotId] = shotVariants;
+      nextBySet[setId] = setVariants;
+      return { materialVariantsByShot: nextBySet };
+    }),
 
   setLighting: (partial) =>
     set((state) => ({
@@ -170,9 +193,12 @@ const useRenderingDemoStore = create((set, get) => ({
       state.activeTag === "all"
         ? shots
         : shots.filter((shot) => shot.tags?.includes(state.activeTag));
-    return filtered.map((shot) =>
-      getShotWithVariants(state.activeSetId, shot, state.materialVariants)
-    );
+    return filtered.map((shot) => {
+      const variantsForShot =
+        state.materialVariantsByShot[state.activeSetId]?.[shot.id] ??
+        DEFAULT_MATERIAL_VARIANTS;
+      return getShotWithVariants(state.activeSetId, shot, variantsForShot);
+    });
   },
 
   getSelectedShots: () => {
@@ -181,9 +207,12 @@ const useRenderingDemoStore = create((set, get) => ({
     const selectedIds = Object.keys(state.selectedRenderIds);
     return shots
       .filter((shot) => selectedIds.includes(shot.id))
-      .map((shot) =>
-        getShotWithVariants(state.activeSetId, shot, state.materialVariants)
-      );
+      .map((shot) => {
+        const variantsForShot =
+          state.materialVariantsByShot[state.activeSetId]?.[shot.id] ??
+          DEFAULT_MATERIAL_VARIANTS;
+        return getShotWithVariants(state.activeSetId, shot, variantsForShot);
+      });
   },
 
   getSelectedShot: () => {
@@ -192,9 +221,21 @@ const useRenderingDemoStore = create((set, get) => ({
     const shot =
       shots.find((candidate) => candidate.id === state.selectedRenderId) ??
       null;
-    return shot
-      ? getShotWithVariants(state.activeSetId, shot, state.materialVariants)
-      : null;
+    if (!shot) {
+      return null;
+    }
+    const variantsForShot =
+      state.materialVariantsByShot[state.activeSetId]?.[shot.id] ??
+      DEFAULT_MATERIAL_VARIANTS;
+    return getShotWithVariants(state.activeSetId, shot, variantsForShot);
+  },
+  getMaterialVariantsForShot: (setId, shotId) => {
+    if (!setId || !shotId) {
+      return DEFAULT_MATERIAL_VARIANTS;
+    }
+    const variantsForShot =
+      get().materialVariantsByShot[setId]?.[shotId] ?? null;
+    return variantsForShot ?? DEFAULT_MATERIAL_VARIANTS;
   },
   getAltText: (shotId) => get().altTextByShot[shotId] ?? "",
 }));

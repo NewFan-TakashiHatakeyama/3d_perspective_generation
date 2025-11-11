@@ -8,6 +8,7 @@ import PreviewColumn from "./PreviewColumn";
 import AdjustmentColumn from "./AdjustmentColumn";
 import useRenderingDemoStore, { COMPARISON_MODES } from "../../store/useRenderingDemoStore";
 import {
+  DEFAULT_MATERIAL_VARIANTS,
   DEFAULT_TONE_FILTERS,
   TONE_PRESETS,
   TONE_PRESET_KEYS,
@@ -45,7 +46,10 @@ const RenderingDemoPage = () => {
   const applyTonePreset = useRenderingDemoStore((state) => state.applyTonePreset);
   const resetToneFilters = useRenderingDemoStore((state) => state.resetToneFilters);
   const activeTonePreset = useRenderingDemoStore((state) => state.activeTonePreset);
-  const materialVariants = useRenderingDemoStore((state) => state.materialVariants);
+  const materialVariants = useRenderingDemoStore((state) =>
+    state.getMaterialVariantsForShot(state.activeSetId, state.selectedRenderId) ??
+    DEFAULT_MATERIAL_VARIANTS
+  );
   const setMaterialVariant = useRenderingDemoStore((state) => state.setMaterialVariant);
   const lighting = useRenderingDemoStore((state) => state.lighting);
   const setLighting = useRenderingDemoStore((state) => state.setLighting);
@@ -212,7 +216,10 @@ const RenderingDemoPage = () => {
             toneFilters={toneFilters}
             onToneChange={setToneFilterValue}
             materialVariants={materialVariants}
-            onMaterialChange={setMaterialVariant}
+            onMaterialChange={(groupId, variantId) => {
+              if (!selectedRenderId) return;
+              setMaterialVariant(activeSetId, selectedRenderId, groupId, variantId);
+            }}
             lighting={lighting}
             onLightingChange={setLighting}
             onLightingPreset={setLightingPreset}
